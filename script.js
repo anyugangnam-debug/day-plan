@@ -57,6 +57,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let memosData = JSON.parse(localStorage.getItem('haruMemos')) || {};
     let goalData = localStorage.getItem('haruGoal') || '';
     let isHighPriority = false;
+
+    // 동기화 트리거
+    const triggerDataSync = () => {
+        window.dispatchEvent(new CustomEvent('haruDataSaved', { 
+            detail: { plans: plansData, schedule: scheduleData, memos: memosData, goal: goalData } 
+        }));
+    };
+
+    window.haruLoadData = (data) => {
+        if(data.plans) plansData = data.plans;
+        if(data.schedule) scheduleData = data.schedule;
+        if(data.memos) memosData = data.memos;
+        if(data.goal !== undefined) goalData = data.goal;
+        
+        localStorage.setItem('haruPlans', JSON.stringify(plansData));
+        localStorage.setItem('haruSchedule', JSON.stringify(scheduleData));
+        localStorage.setItem('haruMemos', JSON.stringify(memosData));
+        localStorage.setItem('haruGoal', goalData);
+        
+        renderGoal();
+        if (!viewDashboard.classList.contains('hidden')) setDashAndScheduleHeader();
+        if (!viewSchedule.classList.contains('hidden')) renderHourlySchedule();
+        if (!viewDaily.classList.contains('hidden')) renderDailyTasks();
+        if (!viewHistory.classList.contains('hidden')) {
+            const gridDiv = historyContainer.querySelector('.history-grid');
+            if(gridDiv) {
+                viewHistory.classList.add('hidden');
+                switchView('history');
+            }
+        }
+    };
     
     // 테마 적용 함수
     const applyTheme = () => {
@@ -118,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!viewDaily.classList.contains('hidden')) {
             renderDailyTasks(); 
         }
+        triggerDataSync();
     };
 
     const setHeaderForDate = () => {
@@ -150,10 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         localStorage.setItem('haruMemos', JSON.stringify(memosData));
+        triggerDataSync();
     };
 
     const saveGoalData = () => {
         localStorage.setItem('haruGoal', goalData);
+        triggerDataSync();
     };
 
     // 목표 렌더링 및 이벤트
@@ -212,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         localStorage.setItem('haruSchedule', JSON.stringify(scheduleData));
+        triggerDataSync();
     };
 
     const renderHourlySchedule = () => {
