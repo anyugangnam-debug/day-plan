@@ -46,10 +46,13 @@ body {
     background-image: linear-gradient(135deg, var(--bg-color) 0%, rgba(195, 207, 226, 0.2) 100%);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     color: var(--text-main);
     transition: background-color 0.3s ease, color 0.3s ease, background-image 0.3s ease;
+    padding: 4vh 0;
+    overflow-y: auto;
 }
 
 [data-theme="dark"] body {
