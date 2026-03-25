@@ -27,8 +27,7 @@
                     </div>
                 </div>
                 <div class="date-display-container">
-                    <span id="dash-date" class="date-display"
-                        style="font-size: 1.1rem; color: var(--primary-color);"></span>
+                    <span id="dash-date" class="date-display" style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);"></span>
                     <label class="date-picker-label" title="날짜 변경">
                         <i class="fas fa-calendar-day"></i>
                         <input type="date" id="dash-date-picker" class="hidden-date-picker">
@@ -37,9 +36,9 @@
             </header>
             <main class="dashboard-main">
                 <div class="greeting-message" style="display:flex; justify-content:center; align-items:center; text-align:center; min-height: 80px;" id="greeting-container">
-                    <div id="default-greeting">
+                    <div id="default-greeting" style="color: var(--text-main);">
                         <span id="auth-status-badge" style="display:inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; margin-bottom: 4px; background: var(--border-color); color: var(--text-muted);">게스트 모드</span><br>
-                        <span id="user-display" style="font-weight:700;">게스트</span>님, 오늘도 화이팅! 🌱
+                        <span id="user-display" style="font-weight:700; color: var(--text-main);">게스트</span>님, 오늘도 화이팅! 🌱
                     </div>
                     <div id="motto-greeting" class="hidden">
                         <span id="main-motto-display" style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); line-height: 1.4; word-break: keep-all;"></span>
