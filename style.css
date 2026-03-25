@@ -217,6 +217,7 @@ main {
 
 #task-input {
     flex: 1;
+    width: 0;
     min-width: 0;
     padding: 12px 16px;
     border: 2px solid var(--border-color);
@@ -388,6 +389,7 @@ main {
 
 .task-edit-input {
     flex: 1;
+    width: 0;
     min-width: 0;
     padding: 6px 10px;
     border: 1px solid var(--primary-color);
