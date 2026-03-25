@@ -266,7 +266,7 @@
                 const data = e.detail;
                 const docRef = doc(db, "users", currentUser.uid);
                 await setDoc(docRef, data, { merge: true });
-                console.log("Firestore 저장 성공", data); // FIX: 성공 로그
+                // console.log("Firestore 저장 성공", data); // FIX: 성공 로그 (제거됨)
             } catch (err) {
                 console.error("데이터 저장 실패:", err); // FIX: 에러 로그
             }

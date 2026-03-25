@@ -135,13 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentUid !== null) {
             // FIX: 로그인 사용자 (Firestore 전용, haruDataSaved 이벤트 발생)
-            console.log("Firestore 저장 이벤트 발생", { detail: stateToSave });
+            // console.log("Firestore 저장 이벤트 발생", { detail: stateToSave });
             window.dispatchEvent(new CustomEvent('haruDataSaved', { detail: stateToSave }));
         } else {
             // FIX: 게스트 사용자 (sessionStorage에만 저장)
             try {
                 sessionStorage.setItem('guest_dayplan_session', JSON.stringify(stateToSave));
-                console.log("게스트 세션 저장");
+                // console.log("게스트 세션 저장");
             } catch (e) {
                 console.error("sessionStorage 저장 오류 방어:", e);
             }
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.haruSetGuestMode = (isLogout = false) => {
         // 로그아웃으로 인한 상태 전환이거나, 직전에 로그인 상태였던 경우 완전 리셋
         if (isLogout || currentUid !== null) {
-            console.log("게스트 초기화");
+            // console.log("게스트 초기화");
             currentUid = null;
             applyAppData(null); // 완전 초기 상태 적용
             try { sessionStorage.removeItem('guest_dayplan_session'); } catch(e){} // 게스트 기존 세션 삭제
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // FIX: window.haruSetUser (병합 로직 제거 및 cloudData 우선 적용)
     window.haruSetUser = (uid, cloudData) => {
-        console.log("로그인 데이터 적용");
+        // console.log("로그인 데이터 적용");
         currentUid = uid;
         
         // 로그인 시 기존 게스트 세션 데이터 자동 삭제 (자동 병합 방지)
