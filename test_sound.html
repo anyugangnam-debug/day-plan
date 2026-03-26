@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>하루플랜 체크 소리 테스트</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; padding: 40px; text-align: center; background-color: #fcfaf8; }
+        button { padding: 16px 32px; font-size: 16px; font-weight: 600; margin: 12px; cursor: pointer; border-radius: 12px; border: 1.5px solid #e2e2e2; background: white; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        button:hover { border-color: #111; transform: translateY(-2px); }
+        .desc { font-size: 14px; color: #888; margin-bottom: 24px; line-height: 1.5; }
+        .card { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; border: 1.5px solid #e2e2e2; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color: #111;">어떤 '스윽' 소리가 좋으신가요?</h2>
+        <p class="desc">아직 <code>script.js</code>에 기능을 추가하지 않았습니다.<br>아래 버튼을 눌러 가장 마음에 드는 가볍고 간결한 소리를 선택해 주세요!</p>
+
+        <div>
+            <button onclick="playSound1()">1번. 연필 끝으로 얇게 긋는 작은 소리 (샤프/연필)</button>
+            <p class="desc">두꺼운 잡음 대역을 완전히 없애고 아주 가볍고 짧게 '슥' 하는 소리입니다.</p>
+        </div>
+
+        <div>
+            <button onclick="playSound2()">2번. 경쾌한 앱 UI 체크 소리 (깔끔한 띡/쇽)</button>
+            <p class="desc">사각거리는 마찰음 없이 컴퓨터/앱에서 나는 깔끔한 완료 효과음 스타일입니다.</p>
+        </div>
+        
+        <div>
+            <button onclick="playSound3()">3번. 극도로 짧은 점 찍는 소리 (톡)</button>
+            <p class="desc">거의 마우스 클릭에 가까울 정도로 아주 짧게 '톡' 찌르는 소리입니다.</p>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 1번: 얇고 가벼운 연필 소리 (Highpass Filter 사용)
+        function playSound1() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const bufferSize = audioCtx.sampleRate * 0.05; // 50ms로 매우 짧게
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // 노이즈 볼륨을 낮춰 가볍게 만듦
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.4;
+            
+            const noiseSrc = audioCtx.createBufferSource();
+            noiseSrc.buffer = buffer;
+            
+            // Highpass 필터로 두꺼운 저음/중음을 완전히 날려버림 (얇고 앙칼진 소리만 남김)
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 5000; 
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            noiseSrc.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            noiseSrc.start();
+        }
+
+        // 2번: 깔끔한 UI 체크음 (Sine 파형 스윕)
+        function playSound2() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine'; // 사각거리지 않고 부드럽고 둥근 파형
+            
+            // 음의 높낮이가 순간적으로 떨어져서 경쾌한 느낌을 줌
+            osc.frequency.setValueAtTime(1500, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // 3번: 극도로 짧은 점 찍는 소리 (마찰 소리 극소화)
+        function playSound3() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const bufferSize = audioCtx.sampleRate * 0.02; // 20ms (거의 찰나)
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+            
+            const noiseSrc = audioCtx.createBufferSource();
+            noiseSrc.buffer = buffer;
+            
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 3000;
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.02);
+            
+            noiseSrc.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            noiseSrc.start();
+        }
+    </script>
+</body>
+</html>
