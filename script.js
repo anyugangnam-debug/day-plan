@@ -207,49 +207,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // To do list 체크 시 가볍게 스윽 긋는 소리 (미니멀 디자인 전용)
+    // To do list 체크 시 아주 짧고 간결하게 톡 찍히는 소리 (미니멀 디자인 전용, 사용자 선택 3번 소리)
     function playSwishSound() {
         if (!isSoundOn || soundVolume <= 0) return;
-        // 사용자 요청에 따라 미니멀 디자인에서만 동작하게 제한 (필요시 제거 가능)
         const isMinimal = document.body.getAttribute('data-design') === 'minimal';
         if (!isMinimal) return;
 
         if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
         try {
-            // 사각거리는 질감을 없애고 아주 짧고 간결한 '스윽' 소리만 남깁니다.
-            const bufferSize = window.audioCtx.sampleRate * 0.08; // 80ms로 단축
+            const bufferSize = window.audioCtx.sampleRate * 0.02; // 20ms 극도로 짧게
             const buffer = window.audioCtx.createBuffer(1, bufferSize, window.audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             
+            // 마찰 소음 최소화
             for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * 0.5; // 원래보다 부드러운 노이즈
+                data[i] = (Math.random() * 2 - 1) * 0.5; 
             }
             
             const noiseSrc = window.audioCtx.createBufferSource();
             noiseSrc.buffer = buffer;
             
-            // Lowpass 필터를 사용해 거친 고역대를 깎아내고 간결한 스윽 소리만 연출
             const filter = window.audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(2500, window.audioCtx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(300, window.audioCtx.currentTime + 0.08); 
+            filter.type = 'highpass';
+            filter.frequency.value = 3000;
             
             const gainNode = window.audioCtx.createGain();
             
-            // 어택을 아주 짧게 하고 빠르게 사라지도록 설정
-            gainNode.gain.setValueAtTime(0, window.audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(soundVolume * 1.5, window.audioCtx.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.08);
+            // 볼륨을 순간적으로만 튀게 하고 직후 바로 감소 (톡 쏘는 느낌)
+            gainNode.gain.setValueAtTime(soundVolume, window.audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.02);
             
             noiseSrc.connect(filter);
             filter.connect(gainNode);
             gainNode.connect(window.audioCtx.destination);
             
             noiseSrc.start(window.audioCtx.currentTime);
-            noiseSrc.stop(window.audioCtx.currentTime + 0.08);
+            noiseSrc.stop(window.audioCtx.currentTime + 0.02);
         } catch (e) {
-            console.error('Swish sound error:', e);
+            console.error('Check sound error:', e);
         }
     }
 
